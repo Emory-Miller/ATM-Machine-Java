@@ -47,7 +47,8 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println(" Type 3 - Exit");
+				System.out.println(" Type 3 - View Balances");
+				System.out.println(" Type 4 - Logout");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -60,7 +61,11 @@ public class OptionMenu {
 					getSaving(acc);
 					break;
 				case 3:
-					end = true;
+					System.out.println("\nSavings Account Balance: " + moneyFormat.format(acc.getSavingBalance()));
+					System.out.println("\nCheckings Account Balance: " + moneyFormat.format(acc.getCheckingBalance()));
+					break;
+				case 4:
+					mainMenu();
 					break;
 				default:
 					System.out.println("\nInvalid Choice.");
@@ -68,6 +73,8 @@ public class OptionMenu {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				menuInput.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -96,7 +103,6 @@ public class OptionMenu {
 				case 3:
 					acc.getCheckingDepositInput();
 					break;
-
 				case 4:
 					acc.getTransferInput("Checkings");
 					break;
@@ -176,19 +182,20 @@ public class OptionMenu {
 		System.out.println("\nEnter PIN to be registered");
 		int pin = menuInput.nextInt();
 		data.put(cst_no, new Account(cst_no, pin));
-		System.out.println("\nYour new account has been successfuly registered!");
+		System.out.println("\nYour new account has been successfully registered!");
 		System.out.println("\nRedirecting to login.............");
 		getLogin();
 	}
 
 	public void mainMenu() throws IOException {
-		data.put(952141, new Account(952141, 191904, 1000, 5000));
+		data.put(952141, new Account(952141, 191904, 10000, 50000));
 		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
 		while (!end) {
 			try {
 				System.out.println("\n Type 1 - Login");
 				System.out.println(" Type 2 - Create Account");
+				System.out.println(" Type 3 - Exit");
 				System.out.print("\nChoice: ");
 				int choice = menuInput.nextInt();
 				switch (choice) {
@@ -198,6 +205,9 @@ public class OptionMenu {
 					break;
 				case 2:
 					createAccount();
+					end = true;
+					break;
+				case 3:
 					end = true;
 					break;
 				default:
