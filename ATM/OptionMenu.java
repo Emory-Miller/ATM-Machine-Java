@@ -1,4 +1,5 @@
-import java.io.IOException;
+import javax.xml.crypto.Data;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.InputMismatchException;
@@ -6,12 +7,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
-public class OptionMenu {
+public class OptionMenu{
 	Scanner menuInput = new Scanner(System.in);
 	DecimalFormat moneyFormat = new DecimalFormat("'$'###,##0.00");
 	HashMap<Integer, Account> data = new HashMap<Integer, Account>();
 
-	public void getLogin() throws IOException {
+
+	public void getLogin(){
 		boolean end = false;
 		int customerNumber = 0;
 		int pinNumber = 0;
@@ -21,10 +23,10 @@ public class OptionMenu {
 				customerNumber = menuInput.nextInt();
 				System.out.print("\nEnter your PIN number: ");
 				pinNumber = menuInput.nextInt();
-				Iterator it = data.entrySet().iterator();
+				Iterator<Map.Entry<Integer, Account>> it = data.entrySet().iterator();
 				while (it.hasNext()) {
-					Map.Entry pair = (Map.Entry) it.next();
-					Account acc = (Account) pair.getValue();
+					Map.Entry<Integer, Account> pair = it.next();
+					Account acc = pair.getValue();
 					if (data.containsKey(customerNumber) && pinNumber == acc.getPinNumber()) {
 						getAccountType(acc);
 						end = true;
@@ -73,7 +75,7 @@ public class OptionMenu {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				menuInput.next();
-			} catch (IOException e) {
+			} catch (IOException | ClassNotFoundException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -88,7 +90,7 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - Exit");
+				System.out.println(" Type 5 - Return to previous menu");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -128,7 +130,7 @@ public class OptionMenu {
 				System.out.println(" Type 2 - Withdraw Funds");
 				System.out.println(" Type 3 - Deposit Funds");
 				System.out.println(" Type 4 - Transfer Funds");
-				System.out.println(" Type 5 - Exit");
+				System.out.println(" Type 5 - Return to previous menu");
 				System.out.print("Choice: ");
 				int selection = menuInput.nextInt();
 				switch (selection) {
@@ -164,9 +166,9 @@ public class OptionMenu {
 			try {
 				System.out.println("\nEnter your customer number ");
 				cst_no = menuInput.nextInt();
-				Iterator it = data.entrySet().iterator();
+				Iterator<Map.Entry<Integer, Account>> it = data.entrySet().iterator();
 				while (it.hasNext()) {
-					Map.Entry pair = (Map.Entry) it.next();
+					Map.Entry<Integer, Account> pair = it.next();
 					if (!data.containsKey(cst_no)) {
 						end = true;
 					}
@@ -182,12 +184,14 @@ public class OptionMenu {
 		System.out.println("\nEnter PIN to be registered");
 		int pin = menuInput.nextInt();
 		data.put(cst_no, new Account(cst_no, pin));
+//		writeDataToFile();
 		System.out.println("\nYour new account has been successfully registered!");
 		System.out.println("\nRedirecting to login.............");
 		getLogin();
 	}
 
-	public void mainMenu() throws IOException {
+	public void mainMenu() throws IOException, ClassNotFoundException {
+//		readDataFromFile();
 		data.put(952141, new Account(952141, 191904, 10000, 50000));
 		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
@@ -195,7 +199,7 @@ public class OptionMenu {
 			try {
 				System.out.println("\n Type 1 - Login");
 				System.out.println(" Type 2 - Create Account");
-				System.out.println(" Type 3 - Exit");
+				System.out.println(" Type 3 - Exit ATM");
 				System.out.print("\nChoice: ");
 				int choice = menuInput.nextInt();
 				switch (choice) {
@@ -219,7 +223,27 @@ public class OptionMenu {
 			}
 		}
 		System.out.println("\nThank You for using this ATM.\n");
+		writeDataToFile();
 		menuInput.close();
 		System.exit(0);
 	}
+
+	public void writeDataToFile() throws IOException {
+		File file = new File("data-log.txt");
+		BufferedWriter bf = new BufferedWriter(new FileWriter(file));
+		for(Map.Entry<Integer, Account> entry: data.entrySet()){
+			bf.write(entry.getKey() + ":" + entry.getValue());
+			bf.newLine();
+		}
+
+	}
+
+	public void readDataFromFile() throws IOException, ClassNotFoundException {
+		File file = new File("accounts.txt");
+		FileInputStream f = new FileInputStream(file);
+		ObjectInputStream s = new ObjectInputStream(f);
+		data = (HashMap<Integer, Account>) s.readObject();
+		s.close();
+	}
+
 }

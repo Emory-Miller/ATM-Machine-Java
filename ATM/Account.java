@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Account {
+public class Account implements Serializable {
 	// variables
 	private int customerNumber;
 	private int pinNumber;
@@ -175,7 +176,7 @@ public class Account {
 				if (accType.equals("Checkings")) {
 					System.out.println("\nSelect an account you wish to tranfers funds to:");
 					System.out.println("1. Savings");
-					System.out.println("2. Exit");
+					System.out.println("2. Return to previous menu");
 					System.out.print("\nChoice: ");
 					int choice = input.nextInt();
 					switch (choice) {
@@ -202,7 +203,7 @@ public class Account {
 				} else if (accType.equals("Savings")) {
 					System.out.println("\nSelect an account you wish to tranfers funds to: ");
 					System.out.println("1. Checkings");
-					System.out.println("2. Exit");
+					System.out.println("2. Return to previous menu");
 					System.out.print("\nChoice: ");
 					int choice = input.nextInt();
 					switch (choice) {
