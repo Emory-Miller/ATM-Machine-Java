@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
+import static java.lang.Integer.parseInt;
+
 public class OptionMenu{
 	Scanner menuInput = new Scanner(System.in);
 	DecimalFormat moneyFormat = new DecimalFormat("'$'###,##0.00");
@@ -191,9 +193,9 @@ public class OptionMenu{
 	}
 
 	public void mainMenu() throws IOException, ClassNotFoundException {
-//		readDataFromFile();
-		data.put(952141, new Account(952141, 191904, 10000, 50000));
-		data.put(123, new Account(123, 123, 20000, 50000));
+		readDataFromFile();
+//		data.put(952141, new Account(952141, 191904, 10000, 50000));
+//		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
 		while (!end) {
 			try {
@@ -229,21 +231,29 @@ public class OptionMenu{
 	}
 
 	public void writeDataToFile() throws IOException {
-		File file = new File("data-log.txt");
-		BufferedWriter bf = new BufferedWriter(new FileWriter(file));
+		File file = new File("accounts.txt");
+		Iterator it = data.entrySet().iterator();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 		for(Map.Entry<Integer, Account> entry: data.entrySet()){
-			bf.write(entry.getKey() + ":" + entry.getValue());
-			bf.newLine();
+			Account account = entry.getValue();
+			bw.write(String.format("%s, %s, %s, %s\n", account.getCustomerNumber(), account.getPinNumber(), account.getCheckingBalance(), account.getSavingBalance()));
 		}
-
+		bw.close();
 	}
 
-	public void readDataFromFile() throws IOException, ClassNotFoundException {
+	public void readDataFromFile() throws IOException {
 		File file = new File("accounts.txt");
-		FileInputStream f = new FileInputStream(file);
-		ObjectInputStream s = new ObjectInputStream(f);
-		data = (HashMap<Integer, Account>) s.readObject();
-		s.close();
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
+		while ((line = br.readLine()) != null){
+			String[] parts = line.split(", ");
+			int customerNumber = parseInt(parts[0]);
+			int pinNumber = parseInt(parts[1]);
+			double checkingBalance = Double.parseDouble(parts[2]);
+			double savingBalance = Double.parseDouble(parts[3]);
+			data.put(customerNumber, new Account(customerNumber, pinNumber, checkingBalance, savingBalance));
+		}
+		br.close();
 	}
 
 }
