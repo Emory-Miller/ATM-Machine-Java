@@ -1,6 +1,8 @@
-import java.io.Serializable;
+import java.io.*;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Account implements Serializable {
@@ -94,6 +96,8 @@ public class Account implements Serializable {
 				if ((checkingBalance - amount) >= 0 && amount >= 0) {
 					calcCheckingWithdraw(amount);
 					System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
+					logAccountTransactionDataToFile("Checking Withdraw", amount);
+					logTransactionDataToFile("Checking Withdraw", amount);
 					end = true;
 				} else {
 					System.out.println("\nBalance Cannot be Negative.");
@@ -101,6 +105,8 @@ public class Account implements Serializable {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -115,6 +121,8 @@ public class Account implements Serializable {
 				if ((savingBalance - amount) >= 0 && amount >= 0) {
 					calcSavingWithdraw(amount);
 					System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
+					logAccountTransactionDataToFile("Saving Withdraw", amount);
+					logTransactionDataToFile("Saving Withdraw", amount);
 					end = true;
 				} else {
 					System.out.println("\nBalance Cannot Be Negative.");
@@ -122,6 +130,8 @@ public class Account implements Serializable {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -136,6 +146,8 @@ public class Account implements Serializable {
 				if ((checkingBalance + amount) >= 0 && amount >= 0) {
 					calcCheckingDeposit(amount);
 					System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
+					logAccountTransactionDataToFile("Checking Deposit", amount);
+					logTransactionDataToFile("Checking Deposit", amount);
 					end = true;
 				} else {
 					System.out.println("\nBalance Cannot Be Negative.");
@@ -143,6 +155,8 @@ public class Account implements Serializable {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -158,6 +172,8 @@ public class Account implements Serializable {
 				if ((savingBalance + amount) >= 0 && amount >= 0) {
 					calcSavingDeposit(amount);
 					System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
+					logAccountTransactionDataToFile("Saving Deposit", amount);
+					logTransactionDataToFile("Saving Deposit", amount);
 					end = true;
 				} else {
 					System.out.println("\nBalance Cannot Be Negative.");
@@ -165,6 +181,8 @@ public class Account implements Serializable {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -189,6 +207,8 @@ public class Account implements Serializable {
 							System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
 							System.out.println(
 									"\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
+							logAccountTransactionDataToFile("Checking to Savings Transfer Deposit", amount);
+							logTransactionDataToFile("Checking to Savings Transfer Deposit", amount);
 							end = true;
 						} else {
 							System.out.println("\nBalance Cannot Be Negative.");
@@ -201,8 +221,8 @@ public class Account implements Serializable {
 						break;
 					}
 				} else if (accType.equals("Savings")) {
-					System.out.println("\nSelect an account you wish to tranfers funds to: ");
-					System.out.println("1. Checkings");
+					System.out.println("\nSelect an account you wish to transfer funds to: ");
+					System.out.println("1. Checking");
 					System.out.println("2. Return to previous menu");
 					System.out.print("\nChoice: ");
 					int choice = input.nextInt();
@@ -215,6 +235,8 @@ public class Account implements Serializable {
 							calcSavingTransfer(amount);
 							System.out.println("\nCurrent checkings account balance: " + moneyFormat.format(checkingBalance));
 							System.out.println("\nCurrent savings account balance: " + moneyFormat.format(savingBalance));
+							logAccountTransactionDataToFile("Savings to Checking Transfer Deposit", amount);
+							logTransactionDataToFile("Savings to Checking Transfer Deposit", amount);
 							end = true;
 						} else {
 							System.out.println("\nBalance Cannot Be Negative.");
@@ -230,7 +252,25 @@ public class Account implements Serializable {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
+
+	}
+	public void logTransactionDataToFile(String logType, double number) throws IOException {
+		File file = new File("log.txt");
+		BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+		Date date = new Date();
+		bw.write(String.format("Date: %s ; Customer Account Number: %s ; Transaction Type: %s ; Amount Changed: $%s\n", date, customerNumber, logType, number));
+		bw.close();
+	}
+
+	public void logAccountTransactionDataToFile(String logType, double number) throws IOException {
+		File file = new File(String.format("%s.txt", customerNumber));
+		Date date = new Date();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+		bw.write(String.format("Date: %s ; Customer Account Number: %s ; Transaction Type: %s ; Amount Changed: $%s\n", date, customerNumber, logType, number));
+		bw.close();
 	}
 }

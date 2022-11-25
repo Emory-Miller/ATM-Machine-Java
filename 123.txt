@@ -1,0 +1,2 @@
+Date: Fri Nov 25 15:22:00 EST 2022 ; Customer Account Number: 123 ; Transaction Type: Checking Withdraw ; Amount Changed: $100.0
+Date: Fri Nov 25 15:23:38 EST 2022 ; Customer Account Number: 123 ; Transaction Type: Saving Withdraw ; Amount Changed: $1000.0

@@ -1,4 +1,3 @@
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import static java.lang.Integer.parseInt;
 public class OptionMenu{
 	Scanner menuInput = new Scanner(System.in);
 	DecimalFormat moneyFormat = new DecimalFormat("'$'###,##0.00");
-	HashMap<Integer, Account> data = new HashMap<Integer, Account>();
+	final HashMap<Integer, Account> data = new HashMap<Integer, Account>();
 
 
 	public void getLogin(){
@@ -52,7 +51,8 @@ public class OptionMenu{
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
 				System.out.println(" Type 3 - View Balances");
-				System.out.println(" Type 4 - Logout");
+				System.out.println(" Type 4 - View Transaction History");
+				System.out.println(" Type 5 - Logout");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -69,6 +69,10 @@ public class OptionMenu{
 					System.out.println("\nCheckings Account Balance: " + moneyFormat.format(acc.getCheckingBalance()));
 					break;
 				case 4:
+					readTransactionHistoryFromFile(acc);
+					break;
+				case 5:
+					writeAccountDataToFile();
 					mainMenu();
 					break;
 				default:
@@ -77,7 +81,7 @@ public class OptionMenu{
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				menuInput.next();
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -103,6 +107,7 @@ public class OptionMenu{
 					break;
 				case 2:
 					acc.getCheckingWithdrawInput();
+
 					break;
 				case 3:
 					acc.getCheckingDepositInput();
@@ -192,8 +197,8 @@ public class OptionMenu{
 		getLogin();
 	}
 
-	public void mainMenu() throws IOException, ClassNotFoundException {
-		readDataFromFile();
+	public void mainMenu() throws IOException{
+		readAccountDataFromFile();
 //		data.put(952141, new Account(952141, 191904, 10000, 50000));
 //		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
@@ -225,23 +230,25 @@ public class OptionMenu{
 			}
 		}
 		System.out.println("\nThank You for using this ATM.\n");
-		writeDataToFile();
 		menuInput.close();
 		System.exit(0);
 	}
 
-	public void writeDataToFile() throws IOException {
+	public void writeAccountDataToFile() throws IOException {
 		File file = new File("accounts.txt");
-		Iterator it = data.entrySet().iterator();
 		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 		for(Map.Entry<Integer, Account> entry: data.entrySet()){
 			Account account = entry.getValue();
-			bw.write(String.format("%s, %s, %s, %s\n", account.getCustomerNumber(), account.getPinNumber(), account.getCheckingBalance(), account.getSavingBalance()));
+			int customerNumber = account.getCustomerNumber();
+			int pinNumber = account.getPinNumber();
+			double checkingBalance = account.getCheckingBalance();
+			double savingBalance = account.getSavingBalance();
+			bw.write(String.format("%s, %s, %s, %s\n", customerNumber, pinNumber, checkingBalance, savingBalance));
 		}
 		bw.close();
 	}
 
-	public void readDataFromFile() throws IOException {
+	public void readAccountDataFromFile() throws IOException {
 		File file = new File("accounts.txt");
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
@@ -252,6 +259,16 @@ public class OptionMenu{
 			double checkingBalance = Double.parseDouble(parts[2]);
 			double savingBalance = Double.parseDouble(parts[3]);
 			data.put(customerNumber, new Account(customerNumber, pinNumber, checkingBalance, savingBalance));
+		}
+		br.close();
+	}
+
+	public void readTransactionHistoryFromFile(Account account) throws IOException {
+		File file = new File(String.format("%s.txt", account.getCustomerNumber()));
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
+		while ((line = br.readLine()) != null){
+			System.out.println(line);
 		}
 		br.close();
 	}

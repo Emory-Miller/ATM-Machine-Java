@@ -1,0 +1,5 @@
+Date: Fri Nov 25 15:22:00 EST 2022 ; Customer Account Number: 123 ; Transaction Type: Checking Withdraw ; Amount Changed: $100.0
+Date: Fri Nov 25 15:23:02 EST 2022 ; Customer Account Number: 12345 ; Transaction Type: Checking Deposit ; Amount Changed: $10000.0
+Date: Fri Nov 25 15:23:38 EST 2022 ; Customer Account Number: 123 ; Transaction Type: Saving Withdraw ; Amount Changed: $1000.0
+Date: Fri Nov 25 15:25:04 EST 2022 ; Customer Account Number: 952141 ; Transaction Type: Checking Withdraw ; Amount Changed: $100.0
+Date: Fri Nov 25 15:25:21 EST 2022 ; Customer Account Number: 952141 ; Transaction Type: Savings to Checking Transfer Deposit ; Amount Changed: $100.0
